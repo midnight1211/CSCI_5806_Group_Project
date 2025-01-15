@@ -190,3 +190,49 @@ int main() {
 
     return 0;
 }
+
+int main() {
+    init_fd_table();
+
+    // Open a file for read-write
+    int fd = open("example.txt", 2); //  read = 0, write = 1, read-write = 2
+    if (fd == -1) {
+         perror("Failed to open file");
+        return 1;
+    }
+
+    // Write to the file
+    const char *data = "Hello, world!";
+    if (write(fd, data, strlen(data)) == -1) {
+        perror("Failed to write");
+        close(fd);
+        return 1;
+    }
+
+    // Seek to the beginning of the file
+    if (lseek(fd, 0, 0) == -1) {
+        perror("Failed to seek");
+        close(fd);
+        return 1;
+    }
+
+    // Read the data back
+    char buffer[50];
+    ssize_t bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+    if (bytes_read == -1) {
+        perror("Failed to read");
+        close(fd);
+        return 1;
+    }
+
+    buffer[bytes_read] = '\0';  // Null-terminate the string
+    printf("Read: %s\n", buffer);
+
+    // Close the file
+    if (close(fd) == -1) {
+        perror("Failed to close File");
+        return 1;
+    }
+
+    return 0;
+}
